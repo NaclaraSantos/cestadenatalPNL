@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Validação de QR Code</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #e05d11, #dd1b89, #684ce6, #6fa3e7, #53da99);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      color: #2c3e50;
+    }
+
+    .container {
+      max-width: 420px;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    img {
+      width: 150px;
+      margin: 15px auto;
+    }
+
+    h2 {
+      color: #2c3e50;
+      font-size: 1.7rem;
+      margin: 20px 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      margin: 20px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: #684ce6;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: linear-gradient(to right, #684ce6, #6fa3e7, #53da99);
+      color: white;
+      transition: transform 0.2s, background 0.3s;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #6fa3e7, #53da99, #e05d11);
+      transform: translateY(-3px);
+    }
+
+    #retirar-btn {
+      display: none;
+      background: linear-gradient(to right, #ff9f43, #ff6b6b);
+      color: white;
+    }
+
+    #retirar-btn:hover {
+      background: linear-gradient(to right, #ff6b6b, #ff9f43);
+    }
+
+    .resultado {
+      margin-top: 20px;
+      font-size: 18px;
+      padding: 15px;
+      background-color: rgba(245, 245, 245, 0.9);
+      border-radius: 12px;
+      color: #2c3e50;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #qr-reader {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      margin: 20px auto;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      background-color: #ffffff;
+    }
+
+    #qr-reader video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #qr-reader::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 4px solid transparent;
+      border-radius: 20px;
+      pointer-events: none;
+      z-index: 2;
+    }
+  </style>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+  <div class="container">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfyZR1zq61bROlgdn9gTrN6fCJuzgE27RzwQ&s" alt="Logo Prefeitura">
+    <h2>Validar Cestas de Natal 🎁</h2>
+    <input type="text" id="cpf" placeholder="Digite o CPF ou escaneie o QR Code">
+    <button id="validar-btn" onclick="validar()">Validar</button>
+    <p id="resultado" class="resultado"></p>
+    <button id="retirar-btn" onclick="retirarCesta()">Retirar Cesta</button>
+    <h3 style="margin-top: 30px; font-size: 1.2rem; color: #2c3e50;">Escanear QR Code</h3>
+    <div id="qr-reader"></div>
+  </div>
+
+<script>
+  let linhaPlanilha = null; 
+
+  function onScanSuccess(decodedText) {
+    document.getElementById('cpf').value = decodedText;
+  }
+
+  function validar() {
+    var cpf = document.getElementById('cpf').value;
+    document.getElementById('resultado').innerText = "Validando...";
+    google.script.run.withSuccessHandler(exibirResultado).verificarCPF(cpf);
+  }
+
+  function exibirResultado(response) {
+    const resultadoElement = document.getElementById('resultado');
+    linhaPlanilha = response.linha;
+
+    if (response.status === "Pode retirar a cesta") {
+      resultadoElement.innerText = `${response.nome}, pode retirar a cesta.`;
+      document.getElementById('retirar-btn').style.display = "block";
+    } else if (response.status === "Cesta já retirada") {
+      resultadoElement.innerText = `${response.nome}, cesta já retirada. Retirada às ${response.horario}.`;
+      document.getElementById('retirar-btn').style.display = "none";
+    } else {
+      resultadoElement.innerText = "CPF não encontrado.";
+      document.getElementById('retirar-btn').style.display = "none";
+    }
+  }
+
+  function retirarCesta() {
+    if (linhaPlanilha) {
+      google.script.run.withSuccessHandler(function(response) {
+        document.getElementById('resultado').innerText = response;
+        document.getElementById('retirar-btn').style.display = "none";
+      }).retirarCesta(linhaPlanilha);
+    }
+  }
+
+  const html5QrCode = new Html5Qrcode("qr-reader");
+  const config = { fps: 10, qrbox: { width: 200, height: 200 } };
+
+  html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+</script>
+</body>
+</html>

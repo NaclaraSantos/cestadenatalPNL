@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cesta de Natal PMNL</title>
+    <link rel="icon" href="img/1-d0cb4a5d.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <img src="img/logo.png" alt="Logo" class="logo">
+        <h1>🎄 Gerador de QR Code 🎁</h1>
+        <form id="qrForm">
+            <input type="text" id="cpf" placeholder="Informe seu CPF (Somente Números)" required pattern="\\d{11}" title="CPF deve conter 11 dígitos numéricos" maxlength="11">
+            <input type="text" id="matricula" placeholder="Informe sua matrícula" required pattern="\\d{5}" title="Matrícula deve conter 5 dígitos" maxlength="5">
+
+             <select id="secretaria" required>
+        <option value="" disabled selected>Selecione sua Secretaria</option>
+        <option value="Administração">Administração</option>
+        <option value="Comunicação">Comunicação</option>
+        <option value="Controladoria">Controladoria</option>
+        <option value="Cultura">Cultura</option>
+        <option value="Desenvolvimento Econômico">Desenvolvimento Econômico</option>
+        <option value="Desenvolvimento Social">Desenvolvimento Social</option>
+        <option value="Educação">Educação</option>
+        <option value="Esporte e Lazer">Esporte e Lazer</option>
+        <option value="Fazenda">Fazenda</option>
+        <option value="Gabinete do Prefeito">Gabinete do Prefeito</option>
+        <option value="Gabinete do Vice-Prefeito">Gabinete do Vice-Prefeito</option>
+        <option value="Governo">Governo</option>
+        <option value="Habitação">Habitação</option>
+        <option value="Meio Ambiente">Meio Ambiente</option>
+        <option value="Obras e Serviços Urbanos">Obras e Serviços Urbanos</option>
+        <option value="Ouvidoria">Ouvidoria</option>
+        <option value="Política Urbana">Política Urbana</option>
+        <option value="Políticas Regionais">Políticas Regionais</option>
+        <option value="Procuradoria Geral">Procuradoria Geral</option>
+        <option value="Projetos Estratégicos">Projetos Estratégicos</option>
+        <option value="Proteção e Defesa Civil">Proteção e Defesa Civil</option>
+        <option value="Regional Nordeste">Regional Nordeste</option>
+        <option value="Regional Noroeste">Regional Noroeste</option>
+        <option value="Regional Norte | Vila da Serra">Regional Norte | Vila da Serra</option>
+        <option value="Saúde">Saúde</option>
+        <option value="Segurança e Mobilidade Urbana">Segurança e Mobilidade Urbana</option>
+        <option value="Subsecretaria de Turismo">Subsecretaria de Turismo</option>
+    </select>
+
+            <button type="button" id="generateQRCode">Gerar QR Code</button>
+        </form>
+
+        <div class="instructions" id="instructions" style="display: none;">
+            <h2>Instruções para Retirada de Cestas de Natal:</h2>
+            <p>1. Cada Servidor tem direito a apenas uma Cesta de Natal e um Kit Frios (Peru e Pernil).</p>
+            <p>2. Além do QR Code, também será necessário <strong>um documento original com foto</strong> para a retirada;</p>
+            <p>3. Para fins de atualização de cadastro na Subsecretaria de Gestão de Pessoas, No dia será obrigatório <strong>apresentar cópia do comprovante de endereço atualizada;</strong></p>
+            <p>4. A retirada da Cesta de Natal <strong>não</strong> será permitida por <strong>terceiros,</strong> somente pelo próprio servidor.</p>
+            <p>5. Os servidores deverão comparecer ao local de entrega na data específica referente ao órgão a que ele estiver lotado, conforme será divulgado.</p>
+            <br>
+            <p>Em caso de dúvidas, entre em contato com a SUGESP (RH) pelo email: <strong>Kitnatalinoservidores2024@pnl.mg.gov.br</strong></p>
+        </div>
+
+        <div id="qrcode"></div>
+        <button type="button" id="downloadQRCode" style="display: none;">Baixar QR Code</button>
+
+        <div class="footer">
+            <p>Feliz Natal e Boas Festas! <br><a href="#">Saiba mais sobre nossa ação</a></p>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

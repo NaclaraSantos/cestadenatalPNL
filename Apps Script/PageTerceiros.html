@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Validação de Terceiros</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #e05d11, #dd1b89, #684ce6, #6fa3e7, #53da99);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      color: #2c3e50;
+    }
+
+    .container {
+      max-width: 400px;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    img {
+      width: 150px;
+      margin: 10px auto;
+    }
+
+    h2 {
+      color: #2c3e50;
+      font-size: 1.6rem;
+      margin: 20px 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #684ce6;
+      outline: none;
+      box-shadow: 0 0 5px rgba(104, 76, 230, 0.5);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: linear-gradient(to right, #ff7f50, #ff6ec7, #8a2be2);
+      color: white;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #ff6ec7, #8a2be2, #6fa3e7);
+      transform: translateY(-2px);
+    }
+
+    .resultado {
+      margin-top: 20px;
+      font-size: 18px;
+      padding: 15px;
+      background-color: rgba(245, 245, 245, 0.9);
+      border-radius: 8px;
+      color: #2c3e50;
+    }
+
+    #qr-reader {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 20px auto;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      background-color: #ffffff;
+    }
+
+    #qr-reader video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #qr-reader::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 4px solid transparent;
+      border-radius: 15px;
+      pointer-events: none;
+      z-index: 2;
+    }
+  </style>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+  <div class="container">
+    <img src="https://novalima.mg.gov.br/_next/image?url=%2Fimages%2Flogo.png&w=384&q=75" alt="Logo Prefeitura">
+    <h2>Validar Retirada por Terceiros 🎁</h2>
+    <input type="text" id="cpfColaborador" placeholder="CPF do Colaborador ou escaneie o QR Code">
+    <input type="text" id="nomeTerceiro" placeholder="Nome do Terceiro">
+    <input type="text" id="cpfTerceiro" placeholder="CPF do Terceiro">
+    <button id="validar-btn" onclick="validarTerceiro()">Validar e Registrar</button>
+    <p id="resultado" class="resultado"></p>
+    <h3 style="margin-top: 30px; font-size: 1.2rem; color: #2c3e50;">Escanear QR Code</h3>
+    <div id="qr-reader"></div>
+  </div>
+
+  <script>
+    let linhaPlanilha = null;
+
+    function onScanSuccess(decodedText) {
+      document.getElementById('cpfColaborador').value = decodedText;
+    }
+
+    function validarTerceiro() {
+      const cpfColaborador = document.getElementById('cpfColaborador').value;
+      const nomeTerceiro = document.getElementById('nomeTerceiro').value;
+      const cpfTerceiro = document.getElementById('cpfTerceiro').value;
+
+      if (!cpfColaborador || !nomeTerceiro || !cpfTerceiro) {
+        document.getElementById('resultado').innerText = "Por favor, preencha todos os campos.";
+        return;
+      }
+
+      document.getElementById('resultado').innerText = "Validando...";
+      google.script.run.withSuccessHandler(function(response) {
+        document.getElementById('resultado').innerText = response;
+      }).validarTerceiro(cpfColaborador, nomeTerceiro, cpfTerceiro);
+    }
+
+    const html5QrCode = new Html5Qrcode("qr-reader");
+    const config = { fps: 10, qrbox: { width: 200, height: 200 } };
+
+    html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+  </script>
+</body>
+</html>
